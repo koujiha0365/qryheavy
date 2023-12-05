@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative Art With JavaScript</title>
+
+  <style>
+  body {
+    margin: 0;
+  }
+  </style>
+
+</head>
+
+<body>
+
+  <canvas id="myCanvas" width="900px" height="600px">
+
+    <script>
+
+    // 定数定義
+    const WIDTH = 900;   //画面幅
+    const HEIGHT = 600;  //画面高さ
+    const NUM = 100;      //球体の数
+    const FLASH = 15;    //光る球体を生み出す確率（1〜NUM)
+
+    // 変数定義
+    let color = {};      //球体の色
+    let size = {};       //球体の大きさ
+    let x = {};          //球体の横座標
+    let y = {};          //球体の縦座標
+    let moveX = {};      //球体の横移動
+    let moveY = {};      //球体の縦移動
+    let counter = 0;
+
+    // 初期値を配列で設定
+    for(let i = 0; i < NUM; i++) {
+      color[i] = getRandomColor();
+      size[i] = getRandomNumber(50);
+      moveX[i] = getRandomNumber(5);
+      moveY[i] = getRandomNumber(5);
+      x[i] = getRandomNumber(250);
+      y[i] = getRandomNumber(250)
+    }
+
+    // お絵かきさん召喚
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+
+    // タイマー処理
+    setInterval(draw,33);
+
+
+    // 球体を書くファンクション
+    function draw() {
+
+      // 書いた球体を消すように見せる処理
+      ctx.fillStyle= 'rgba(0,0,0,.3)';
+      ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+      // NUMの数だけ繰り返し球体を作る。
+      for(let i = 0; i < NUM; i++) {
+
+        if (x[i] > WIDTH || x[i] < 0) {
+          moveX[i] = -moveX[i];
+        }
+        if (y[i] > HEIGHT || y[i] < 0) {
+          moveY[i] = -moveY[i];
+        }
+
+        // moveの数だけ座標を増やし、移動するように見せる
+        if(counter < 800) {
+          x[i] = x[i] + moveX[i] * 20;
+          y[i] = y[i] + moveY[i] * 20;
+        }
+        x[i] = x[i] + moveX[i];
+        y[i] = y[i] + moveY[i];
+
+        // 現在のパスをリセットする
+        ctx.beginPath();
+
+        // 一部ピカピカ光る球体を生み出す
+        if((i % FLASH) === 0){
+          ctx.fillStyle = getRandomColor();
+        }else{
+          ctx.fillStyle = color[i];
+        }
+
+        // 球体の設定
+        ctx.arc(x[i],y[i],size[i],0,Math.PI * 2,true);
+        ctx.fill();
+        // ctx.stroke();
+
+        // カウンター
+        counter++;
+
+      }
+
+    }
+
+    // ランダムな整数値を生成
+    function getRandomNumber(number) {
+      let n = Math.floor(Math.random() * number);
+      return n;
+    }
+
+    // ランダムな小数値を生成
+    function getRandomDecimal() {
+      let n = Math.random().toFixed(1);
+      return n;
+    }
+
+    // ランダムな色を生成
+    function getRandomColor() {
+      let r = getRandomNumber(256);
+      let g = getRandomNumber(256);
+      let b = getRandomNumber(256);
+      let a = getRandomDecimal();
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+  </script>
+</body>
+</html>
